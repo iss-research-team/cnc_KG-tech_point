@@ -246,3 +246,6 @@ if __name__ == '__main__':
     data_process = DataProcess(label, doc_path, keyword_path)
     data_process.get_date()
     data_process.save_keywords()
+
+    # this is a test!!
+    # 123
