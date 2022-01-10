@@ -11,7 +11,7 @@ import spacy
 from tqdm import tqdm
 
 print("test")
-print("刘铭到此一游")
+print("刘铭到此一游!")
 
 def not_empty(s):
     return s and s.strip()
