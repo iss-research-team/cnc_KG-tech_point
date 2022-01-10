@@ -10,6 +10,7 @@ import re
 import spacy
 from tqdm import tqdm
 
+print("test")
 
 def not_empty(s):
     return s and s.strip()
