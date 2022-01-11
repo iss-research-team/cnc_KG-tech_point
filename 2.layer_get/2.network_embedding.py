@@ -161,16 +161,17 @@ if __name__ == '__main__':
     # 参数设置
     d = 512
     batch_size = 32
-    epochs = 200
-
-    node_path = '../data/input/cnc_keywords_patent.json'
-    link_path = '../data/input/cnc_keywords_link_patent.json'
+    epochs = 100
+    
+    label = 'literature'
+    node_path = "../data/input/cnc_keywords_" + label + ".json"
+    link_path = "../data/input/cnc_keywords_link_" + label + ".json"
 
     ng_num = 5
 
-    node_emb_path = '../data/output/node_emd_net'
+    node_emb_path = "../data/output/node_emd_net_" + label
 
-    node_feature_path = '../data/output/node_emb_word_patent.npy'
+    node_feature_path = "../data/output/node_emb_word_" + label + ".npy"
     # 数据处理
     networkdeal = NetworkDeal(node_path, link_path, ng_num)
     networkdeal.get_network_feature()
