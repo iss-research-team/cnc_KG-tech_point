@@ -100,7 +100,7 @@ class NetworkMaker:
                 # 1.通过窗口，设置一个窗口大小，窗口之外的词语不予以考虑
                 # 2.进行更小范围的语言切片
                 # 方案2先不予以考虑.
-                dis_threshold = s_l / node_num  # 关键参数1
+                dis_threshold = 10  # 关键参数1
                 # dis_threshold = 100000 
                 if node_start_list[i] < node_start_list[j]:
                     dis = node_start_list[j] - node_start_list[i] - node_length_list[i]
@@ -119,7 +119,7 @@ class NetworkMaker:
         
         for link, weight in self.link_list_counter.items():
             s, t = [int(node) for node in link.split(' | ')]
-            if weight >= 200:  # 关键参数2
+            if weight >= 50:  # 关键参数2
                 # weight_collect.append(weight)
                 self.link_list_weighted.append([s, t, weight])
         # print(scipy.stats.normaltest(weight_collect))
@@ -168,9 +168,10 @@ class NetworkMaker:
 
 
 if __name__ == '__main__':
-    keyword_path = '../data/input/cnc_keywords_patent.json'
-    doc_path = '../data/input/cnc_doc_patent.txt'
-    link_save_path = '../data/input/cnc_keywords_link.json'
+    label = 'literature'
+    keyword_path = '../data/input/cnc_keywords_' + label + '.json'
+    doc_path = '../data/input/cnc_doc_' + label + '.txt'
+    link_save_path = '../data/input/cnc_keywords_link_' + label + '.json'
 
     network_maker = NetworkMaker(keyword_path, doc_path, link_save_path)
     network_maker.network_make()

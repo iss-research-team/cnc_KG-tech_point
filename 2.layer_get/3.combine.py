@@ -14,9 +14,10 @@ from sklearn.cluster import DBSCAN
 from collections import defaultdict
 
 if __name__ == '__main__':
-    node_feature_path = '../data/output/node_emd_net.npy'
+    label = "literature"
+    node_feature_path = "../data/output/node_emd_net_" + label + ".npy"
     x = np.load(node_feature_path, encoding="latin1")
-    node_feature_path = '../data/input/cnc_keywords_patent.json'
+    node_feature_path = "../data/input/cnc_keywords_" + label + ".json"
     with open(node_feature_path, 'r', encoding='UTF-8') as file:
         node_list = json.load(file)
 
@@ -28,7 +29,7 @@ if __name__ == '__main__':
 
     count = 0
 
-    csv_write_path = '../data/input/keyword_combine.csv'
+    csv_write_path = "../data/input/keyword_combine_" + label + ".csv"
     csv_combine = csv.writer(open(csv_write_path, 'w', encoding='UTF-8', newline=''))
     for _, keyword in keyword_set.items():
         # print(keyword)
