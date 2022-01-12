@@ -10,22 +10,20 @@ import re
 import spacy
 from tqdm import tqdm
 
-print("test")
-print("刘铭到此一游!")
 
 def not_empty(s):
     return s and s.strip()
 
 
 class DataProcess:
-    '''
+    """
     类说明：
     对文本的进一步的预处理
-    '''
+    """
 
     def __init__(self, label, doc_path, keyword_path):
         self.label = label
-        print('label:',label)
+        print('label:', label)
         self.doc_path = doc_path
         self.keyword_path = keyword_path
 
@@ -51,9 +49,9 @@ class DataProcess:
         return doc[:bit + 1].strip(), doc[bit + 1:-1].strip()
 
     def get_stopwords(self):
-        '''
+        """
         Returns a list of stopwords.
-        '''
+        """
         f = open("stopwords.txt")
         stopwords = set()
         for line in f:
@@ -92,9 +90,9 @@ class DataProcess:
         :return:
         """
         keyword_temper = keyword_temper \
-                .replace('USES', '') \
-                .replace('USE', '') \
-                .replace('ADVANTAGE', '')
+            .replace('USES', '') \
+            .replace('USE', '') \
+            .replace('ADVANTAGE', '')
 
         if re.search('[0-9]+[A-Za-z]', keyword_temper):
             # key123Key
@@ -122,8 +120,8 @@ class DataProcess:
         else:
             keyword_temper = []
         if keyword_temper:
-            for i, keyword in enumerate(keyword_temper):
-                keyword_temper[i] = self.keyword_deal(keyword)
+            keyword_temper = [self.keyword_deal(keyword.strip()) for keyword in keyword_temper]
+
         return keyword_temper
 
     def get_keywords_lite(self, keyword_temper):
@@ -132,8 +130,8 @@ class DataProcess:
         :param keywords_temper:
         :return:
         """
-        keyword_temper = keyword_temper.split('; ')
-        keyword_temper = [keyword.strip() for keyword in keyword_temper]
+        keyword_temper = keyword_temper.lower().split('; ')
+        keyword_temper = [self.keyword_deal(keyword.strip()) for keyword in keyword_temper]
 
         return keyword_temper
 
@@ -144,7 +142,7 @@ class DataProcess:
         :param doc:
         :return:
         """
-        doc = doc.strip()
+        doc = doc.lower().strip()
         doc = re.sub(r"['\"]", ' ', doc)
         # 需要解决括号的问题
         char_list = re.findall(self.pattern_patent, doc)
@@ -152,7 +150,7 @@ class DataProcess:
             # 规则可以继续叠加
             if char[1].isdigit() or \
                     'non-English language text' in char:
-                        doc = doc.replace(char, '')
+                doc = doc.replace(char, '')
         doc = ' '.join(doc.split())
         doc = doc.replace('..', '.').replace('. .', '.')
         # 找到倒数两个句号，中间的话就是最后一句话
@@ -173,7 +171,7 @@ class DataProcess:
         :param doc:
         :return:
         """
-        doc = doc.strip()
+        doc = doc.lower().strip()
         doc = re.sub(r"['\"]", ' ', doc)
         # 需要解决括号的问题
         char_list = re.findall(self.pattern_lite, doc)
