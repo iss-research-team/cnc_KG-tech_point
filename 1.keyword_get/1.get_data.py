@@ -68,6 +68,8 @@ class DataProcess:
         #  恢复连字符
         doc = doc.replace(' - ', '-')
         doc = ' '.join([word for word in doc.split() if word not in self.stopwords]) + ' '
+        doc = re.sub(self.pattern_sp, '. ', doc)
+        doc = doc.lower()
         return doc
 
     def keyword_deal(self, doc):
@@ -81,6 +83,7 @@ class DataProcess:
         #  恢复连字符
         doc = doc.replace(' - ', '-')
         doc = ' '.join([word for word in doc.split() if word not in self.stopwords])
+        doc = doc.lower()
         return doc
 
     def get_keywords_patent(self, keyword_temper):
@@ -130,7 +133,7 @@ class DataProcess:
         :param keywords_temper:
         :return:
         """
-        keyword_temper = keyword_temper.lower().split('; ')
+        keyword_temper = keyword_temper.split('; ')
         keyword_temper = [self.keyword_deal(keyword.strip()) for keyword in keyword_temper]
 
         return keyword_temper
@@ -142,7 +145,6 @@ class DataProcess:
         :param doc:
         :return:
         """
-        doc = doc.lower().strip()
         doc = re.sub(r"['\"]", ' ', doc)
         # 需要解决括号的问题
         char_list = re.findall(self.pattern_patent, doc)
@@ -162,7 +164,6 @@ class DataProcess:
         else:
             doc = self.doc_deal(doc)
         # 去除一些奇怪的连接符号
-        doc = re.sub(self.pattern_sp, '. ', doc)
         return doc.strip(), keywords_temper
 
     def doc_trans_lite(self, doc):
@@ -171,7 +172,6 @@ class DataProcess:
         :param doc:
         :return:
         """
-        doc = doc.lower().strip()
         doc = re.sub(r"['\"]", ' ', doc)
         # 需要解决括号的问题
         char_list = re.findall(self.pattern_lite, doc)
@@ -183,7 +183,6 @@ class DataProcess:
         doc = doc.replace('..', '.').replace('. .', '.')
 
         doc = self.doc_deal(doc)
-        doc = re.sub(self.pattern_sp, '. ', doc)
         return doc.strip()
 
     def get_date(self):
