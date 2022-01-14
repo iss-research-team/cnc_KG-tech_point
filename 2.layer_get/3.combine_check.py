@@ -14,14 +14,15 @@ from collections import defaultdict
 from tqdm import tqdm
 
 if __name__ == '__main__':
-    node_feature_path = '../data/output/node_emd_net.npy'
+    label = 'literature'
+    node_feature_path = '../data/output/node_emd_net_' + label + '.npy'
     x = np.load(node_feature_path, encoding="latin1")
-    node_feature_path = '../data/input/cnc_keywords_patent.json'
+    node_feature_path = '../data/input/cnc_keywords_' + label + '.json'
     with open(node_feature_path, 'r', encoding='UTF-8') as file:
         node_list = json.load(file)
 
     # eps为距离阈值ϵ，min_samples为邻域样本数阈值MinPts,X为数据
-    eps_list = [0.1, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    eps_list = [0.1, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 30, 40, 50]
     ms_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     num_cluster = np.zeros((len(eps_list), len(ms_list)))

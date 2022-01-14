@@ -21,7 +21,7 @@ if __name__ == '__main__':
     with open(node_feature_path, 'r', encoding='UTF-8') as file:
         node_list = json.load(file)
 
-    y_pred = DBSCAN(eps=8, min_samples=1).fit_predict(x)
+    y_pred = DBSCAN(eps=10, min_samples=1).fit_predict(x)
     keyword_set = defaultdict(set)
 
     for index, cluster in enumerate(y_pred.tolist()):

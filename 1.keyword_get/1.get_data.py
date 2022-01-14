@@ -238,7 +238,7 @@ class DataProcess:
 
 
 if __name__ == '__main__':
-    label = 'patent'
+    label = 'literature'
     doc_path = '../data/input/cnc_doc_' + label + '.txt'
     keyword_path = '../data/input/cnc_keywords_base_' + label + '.txt'
 
