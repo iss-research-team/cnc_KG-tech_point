@@ -13,6 +13,8 @@ import json
 import re
 import scipy.stats
 import numpy as np
+import sys
+
 from collections import Counter
 from collections import defaultdict
 from tqdm import tqdm
@@ -168,7 +170,7 @@ class NetworkMaker:
 
 
 if __name__ == '__main__':
-    label = 'literature'
+    label = sys.argv[1]
     keyword_path = '../data/input/cnc_keywords_' + label + '.json'
     doc_path = '../data/input/cnc_doc_' + label + '.txt'
     link_save_path = '../data/input/cnc_keywords_link_' + label + '.json'

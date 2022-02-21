@@ -9,6 +9,7 @@ import json
 import re
 import spacy
 from tqdm import tqdm
+import sys
 
 
 def not_empty(s):
@@ -238,7 +239,7 @@ class DataProcess:
 
 
 if __name__ == '__main__':
-    label = 'literature'
+    label = sys.argv[1]
     doc_path = '../data/input/cnc_doc_' + label + '.txt'
     keyword_path = '../data/input/cnc_keywords_base_' + label + '.txt'
 

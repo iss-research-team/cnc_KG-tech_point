@@ -26,7 +26,7 @@ if __name__ == '__main__':
     save_path_p = '../data/input/cnc_keywords_patent.json'
     save_path_l = '../data/input/cnc_keywords_literature.json'
 
-    save_path = '../data/input/cnc_keywords.json'
+    # save_path = '../data/input/cnc_keywords.json'
 
     node_p = get_keywords(input_path_p)
     node_l = get_keywords(input_path_l)
@@ -36,5 +36,5 @@ if __name__ == '__main__':
         json.dump(node_p, file)
     with open(save_path_l, 'w', encoding='UTF-8') as file:
         json.dump(node_l, file)
-    with open(save_path, 'w', encoding='UTF-8') as file:
-        json.dump(node_list, file)
+    # with open(save_path, 'w', encoding='UTF-8') as file:
+    #     json.dump(node_list, file)

@@ -14,6 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
 import json
+import sys
 from tqdm import tqdm
 
 
@@ -163,7 +164,7 @@ if __name__ == '__main__':
     batch_size = 32
     epochs = 100
     
-    label = 'literature'
+    label = sys.argv[1]
     node_path = "../data/input/cnc_keywords_" + label + ".json"
     link_path = "../data/input/cnc_keywords_link_" + label + ".json"
 

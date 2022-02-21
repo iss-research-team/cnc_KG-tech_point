@@ -8,6 +8,7 @@
 from collections import Counter
 from tqdm import tqdm
 import json
+import sys
 
 
 class TopmineAdd():
@@ -111,7 +112,7 @@ class TopmineAdd():
 
 
 if __name__ == '__main__':
-    label = 'literature'
+    label = sys.argv[1]
     seg_path = '../data/input/topmine/partitioneddocs_' + label + '.txt'
     index_path = '../data/input/topmine/vocab_' + label + '.txt'
     keyword_base_path = '../data/input/cnc_keywords_base_' + label + '.txt'
