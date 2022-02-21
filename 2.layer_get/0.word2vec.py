@@ -11,8 +11,9 @@ import pickle
 import json
 import torch
 import numpy as np
-from transformers import BertTokenizer, BertConfig, BertModel
+import sys
 
+from transformers import BertTokenizer, BertConfig, BertModel
 from tqdm import tqdm
 
 
@@ -151,7 +152,7 @@ class WordEmbed():
 
 
 if __name__ == '__main__':
-    label = 'literature'
+    label = sys.argv[1]
     keywords_path = '../data/input/cnc_keywords_' + label + '.json'
     doc_path = '../data/input/cnc_doc_' + label + '.txt'
     result_save_path = '../data/output/node_emb_word_' + label + '.npy'
