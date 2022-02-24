@@ -116,6 +116,6 @@ def deal(prepare_path, json_write_path):
 
 
 if __name__ == '__main__':
-    prepare_path = '../../data/1.source_file/patent'
-    json_write_path = '../../data/2.processed_file/doc_dict_patent.json'
+    prepare_path = '../data/source_file/patent'
+    json_write_path = '../data/0.preprocessed_file/doc_dict_patent.json'
     deal(prepare_path, json_write_path)

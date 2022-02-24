@@ -16,7 +16,7 @@ from collections import defaultdict
 
 if __name__ == '__main__':
     label = sys.argv[1]
-    node_feature_path = "../data/output/node_emd_net_" + label + ".npy"
+    node_feature_path = "../data/2.get_layer/node_emd_net_" + label + ".npy"
     x = np.load(node_feature_path, encoding="latin1")
     node_feature_path = "../data/input/cnc_keywords_" + label + ".json"
     with open(node_feature_path, 'r', encoding='UTF-8') as file:

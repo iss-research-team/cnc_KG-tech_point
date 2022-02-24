@@ -20,11 +20,11 @@ def get_keywords(path):
 
 
 if __name__ == '__main__':
-    input_path_p = '../data/input/cnc_keywords_multiple_patent.txt'
-    input_path_l = '../data/input/cnc_keywords_multiple_literature.txt'
+    input_path_p = '../data/1.keyword_get/cnc_keywords_multiple_patent.txt'
+    input_path_l = '../data/1.keyword_get/cnc_keywords_multiple_literature.txt'
 
-    save_path_p = '../data/input/cnc_keywords_patent.json'
-    save_path_l = '../data/input/cnc_keywords_literature.json'
+    save_path_p = '../data/1.keyword_get/cnc_keywords_patent.json'
+    save_path_l = '../data/1.keyword_get/cnc_keywords_literature.json'
 
     # save_path = '../data/input/cnc_keywords.json'
 

@@ -166,13 +166,13 @@ if __name__ == '__main__':
     epochs = 2
 
     label = sys.argv[1]
-    node_path = "../data/input/cnc_keywords_" + label + ".json"
-    link_path = "../data/input/cnc_keywords_link_" + label + ".json"
+    node_path = "../data/1.keyword_get/cnc_keywords_" + label + ".json"
+    link_path = "../data/2.get_layer/cnc_keywords_link_" + label + ".json"
 
     ng_num = 5
 
-    node_feature_path = "../data/output/node_emb_word_" + label + ".npy"
-    node_emb_path = "../data/output/node_emb_net_" + label
+    node_feature_path = "../data/2.get_layer/node_emb_word_" + label + ".npy"
+    node_emb_path = "../data/2.get_layer/node_emb_net_" + label
     if not os.path.exists(node_emb_path):
         os.mkdir(node_emb_path)
 

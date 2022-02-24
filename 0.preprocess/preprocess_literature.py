@@ -128,6 +128,6 @@ def preprocess(prepare_path, json_write_path):
 
 
 if __name__ == '__main__':
-    prepare_path = '../../data/1.source_file/literature'
-    json_write_path = '../../data/2.processed_file/doc_dict_literature.json'
+    prepare_path = '../data/source_file/literature'
+    json_write_path = '../data/0.preprocessed_file/doc_dict_literature.json'
     preprocess(prepare_path, json_write_path)

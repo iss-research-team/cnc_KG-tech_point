@@ -191,7 +191,7 @@ class DataProcess:
         获取文本数据
         :return:
         """
-        with open('../data/input/doc_dict_' + self.label + '.json', 'r', encoding='UTF-8') as file:
+        with open('../data/0.preprocessed_file/doc_dict_' + self.label + '.json', 'r', encoding='UTF-8') as file:
             data_dict = json.load(file)
         # write
         f_write = open(self.doc_path, 'w', encoding='UTF-8')
@@ -240,8 +240,8 @@ class DataProcess:
 
 if __name__ == '__main__':
     label = sys.argv[1]
-    doc_path = '../data/input/cnc_doc_' + label + '.txt'
-    keyword_path = '../data/input/cnc_keywords_base_' + label + '.txt'
+    doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
+    keyword_path = '../data/1.keyword_get/cnc_keywords_base_' + label + '.txt'
 
     data_process = DataProcess(label, doc_path, keyword_path)
     data_process.get_date()

@@ -171,9 +171,9 @@ class NetworkMaker:
 
 if __name__ == '__main__':
     label = sys.argv[1]
-    keyword_path = '../data/input/cnc_keywords_' + label + '.json'
-    doc_path = '../data/input/cnc_doc_' + label + '.txt'
-    link_save_path = '../data/input/cnc_keywords_link_' + label + '.json'
+    keyword_path = '../data/1.keyword_get/cnc_keywords_' + label + '.json'
+    doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
+    link_save_path = '../data/2.get_layer/cnc_keywords_link_' + label + '.json'
 
     network_maker = NetworkMaker(keyword_path, doc_path, link_save_path)
     network_maker.network_make()

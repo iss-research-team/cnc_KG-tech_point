@@ -113,11 +113,11 @@ class TopmineAdd():
 
 if __name__ == '__main__':
     label = sys.argv[1]
-    seg_path = '../data/input/topmine/partitioneddocs_' + label + '.txt'
-    index_path = '../data/input/topmine/vocab_' + label + '.txt'
-    keyword_base_path = '../data/input/cnc_keywords_base_' + label + '.txt'
-    save_path_s = '../data/input/cnc_keywords_single_' + label + '.txt'
-    save_path_m = '../data/input/cnc_keywords_multiple_' + label + '.txt'
+    seg_path = '../data/1.keyword_get/topmine/partitioneddocs_' + label + '.txt'
+    index_path = '../data/1.keyword_get/topmine/vocab_' + label + '.txt'
+    keyword_base_path = '../data/1.keyword_get/cnc_keywords_base_' + label + '.txt'
+    save_path_s = '../data/1.keyword_get/cnc_keywords_single_' + label + '.txt'
+    save_path_m = '../data/1.keyword_getcdcdcd/cnc_keywords_multiple_' + label + '.txt'
 
     min_freq = 200
     topmine_add = TopmineAdd(index_path, seg_path, min_freq)
