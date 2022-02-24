@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import json
 import sys
+import os
 from tqdm import tqdm
 
 
@@ -171,7 +172,9 @@ if __name__ == '__main__':
     ng_num = 5
 
     node_feature_path = "../data/output/node_emb_word_" + label + ".npy"
-    node_emb_path = "../data/output/node_emb_net_" + label + "/" + "node_emb_"
+    node_emb_path = "../data/output/node_emb_net_" + label
+    if not os.path.exists(node_emb_path):
+        os.mkdir(node_emb_path)
 
     # 数据处理
     networkdeal = NetworkDeal(node_path, link_path, ng_num)
@@ -202,6 +205,6 @@ if __name__ == '__main__':
             loss_collector.append(loss.item())
         ave_loss.append(np.mean(loss_collector))
         if epoch > 0 and epoch % 10 == 0:
-            line.save_embedding(node_emb_path + str(epoch))
+            line.save_embedding(os.path.join(node_emb_path, "epoch_" + str(epoch)))
     loss_save_path = '../data/fig/embed_loss_' + label + '.png'
     loss_draw(epochs, ave_loss, loss_save_path)
