@@ -155,7 +155,7 @@ if __name__ == '__main__':
     label = sys.argv[1]
     keywords_path = '../data/1.keyword_get/cnc_keywords_' + label + '.json'
     doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
-    result_save_path = '../data/2.get_layer/node_emb_word_' + label + '.npy'
+    result_save_path = '../data/2.layer_get/node_emb_word_' + label + '.npy'
     word_embed = WordEmbed(keywords_path, doc_path, result_save_path)
     word_embed.get_bert_feature()
     word_embed.emb_save()
