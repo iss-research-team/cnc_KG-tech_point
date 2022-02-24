@@ -23,9 +23,9 @@ def not_empty(s):
 
 
 # loss曲线绘制
-def loss_draw(epochs, loss_list):
+def loss_draw(epochs, loss_list, loss_save_path):
     plt.plot([i + 1 for i in range(epochs)], loss_list)
-    plt.show()
+    plt.savefig(loss_save_path)
 
 
 class NetworkDeal():
@@ -35,10 +35,10 @@ class NetworkDeal():
 
     def __init__(self, node_path, link_path, ng_num):
         self.ng_num = ng_num
-        with open(node_path, 'r', encoding='UTF-8')as file:
+        with open(node_path, 'r', encoding='UTF-8') as file:
             self.node_list = json.load(file)
         self.node_num = len(self.node_list)
-        with open(link_path, 'r', encoding='UTF-8')as file:
+        with open(link_path, 'r', encoding='UTF-8') as file:
             self.link_list_weighted = json.load(file)
         print('node_num:', self.node_num)
         print('link_num:', len(self.link_list_weighted))
@@ -86,7 +86,7 @@ class NetworkDeal():
 
 
 class Line(nn.Module):
-    def __init__(self, word_size, dim, node_feature_path=False):
+    def __init__(self, word_size, dim, node_feature_path: str = ''):
         super(Line, self).__init__()
         initrange = 0.5 / dim
         # input
@@ -162,17 +162,17 @@ if __name__ == '__main__':
     # 参数设置
     d = 512
     batch_size = 32
-    epochs = 100
-    
+    epochs = 2
+
     label = sys.argv[1]
     node_path = "../data/input/cnc_keywords_" + label + ".json"
     link_path = "../data/input/cnc_keywords_link_" + label + ".json"
 
     ng_num = 5
 
-    node_emb_path = "../data/output/node_emd_net_" + label
-
     node_feature_path = "../data/output/node_emb_word_" + label + ".npy"
+    node_emb_path = "../data/output/node_emb_net_" + label + "/" + "node_emb_"
+
     # 数据处理
     networkdeal = NetworkDeal(node_path, link_path, ng_num)
     networkdeal.get_network_feature()
@@ -197,12 +197,11 @@ if __name__ == '__main__':
             loss.backward()
             optimizer.step()
 
-            if i % 500 == 0:
+            if i % 1000 == 0:
                 print("epoch", epoch, "loss", loss.item())
             loss_collector.append(loss.item())
         ave_loss.append(np.mean(loss_collector))
-
-    loss_draw(epochs, ave_loss)
-
-    # 保存一次参数，作为对比
-    line.save_embedding(node_emb_path)
+        if epoch > 0 and epoch % 10 == 0:
+            line.save_embedding(node_emb_path + str(epoch))
+    loss_save_path = '../data/fig/embed_loss_' + label + '.png'
+    loss_draw(epochs, ave_loss, loss_save_path)
