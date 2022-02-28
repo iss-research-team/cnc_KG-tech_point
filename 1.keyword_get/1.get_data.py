@@ -239,7 +239,6 @@ class DataProcess:
 
 
 if __name__ == '__main__':
-    # push test
     label = sys.argv[1]
     doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
     keyword_path = '../data/1.keyword_get/cnc_keywords_base_' + label + '.txt'

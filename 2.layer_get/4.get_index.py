@@ -105,7 +105,6 @@ if __name__ == '__main__':
     1.index-keyword
     2.index-vector
     """
-    # push test
     combine_path_p = "../data/2.layer_get/cnc_keyword_combine_patent.csv"
     combine_path_l = "../data/2.layer_get/cnc_keyword_combine_literature.csv"
     combine_list_p = get_combine_list(combine_path_p)

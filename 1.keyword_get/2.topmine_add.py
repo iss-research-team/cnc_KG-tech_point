@@ -112,7 +112,6 @@ class TopmineAdd():
 
 
 if __name__ == '__main__':
-    # push test
     label = sys.argv[1]
     seg_path = '../data/1.keyword_get/topmine/partitioneddocs_' + label + '.txt'
     index_path = '../data/1.keyword_get/topmine/vocab_' + label + '.txt'

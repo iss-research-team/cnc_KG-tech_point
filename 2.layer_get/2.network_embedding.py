@@ -160,7 +160,6 @@ class MyDataSet(Data.Dataset):
 
 
 if __name__ == '__main__':
-    # push test
     # 参数设置
     d = 512
     batch_size = 32
