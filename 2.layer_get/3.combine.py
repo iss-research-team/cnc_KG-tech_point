@@ -15,6 +15,7 @@ from sklearn.cluster import DBSCAN
 from collections import defaultdict
 
 if __name__ == '__main__':
+    # push test
     label = sys.argv[1]
     node_feature_path = "../data/2.layer_get/node_emb_net_" + label + ".npy"
     x = np.load(node_feature_path, encoding="latin1")

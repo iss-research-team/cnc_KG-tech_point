@@ -20,6 +20,7 @@ def get_keywords(path):
 
 
 if __name__ == '__main__':
+    # push test
     input_path_p = '../data/1.keyword_get/cnc_keywords_multiple_patent.txt'
     input_path_l = '../data/1.keyword_get/cnc_keywords_multiple_literature.txt'
 
