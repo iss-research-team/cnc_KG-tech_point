@@ -9,6 +9,8 @@ import csv
 import json
 import numpy as np
 import networkx as nx
+from sklearn.cluster import DBSCAN
+from collections import defaultdict
 
 
 def get_combine_list(combine_path):
@@ -99,16 +101,35 @@ def get_index(combine_list, keyword2index_path, index2embed_path):
         json.dump(index2embed, file)
 
 
+def make_coule_file(label, eps, ms):
+    node_feature_path = "../data/2.layer_get/node_emb_net_" + label + ".npy"
+    x = np.load(node_feature_path, encoding="latin1")
+    node_feature_path = "../data/1.keyword_get/cnc_keywords_" + label + ".json"
+    with open(node_feature_path, 'r', encoding='UTF-8') as file:
+        node_list = json.load(file)
+
+    y_pred = DBSCAN(eps=eps, min_samples=ms).fit_predict(x)
+    keyword_set = defaultdict(set)
+
+    for index, cluster in enumerate(y_pred.tolist()):
+        keyword_set[cluster].add(node_list[index])
+
+    keyword_set_list = list(keyword_set.values())
+    keyword_set_list = [list(keywords) for keywords in keyword_set_list]
+
+    return keyword_set_list
+
+
 if __name__ == '__main__':
     """
     生成两个字典：
     1.index-keyword
     2.index-vector
     """
-    combine_path_p = "../data/2.layer_get/cnc_keyword_combine_patent.csv"
-    combine_path_l = "../data/2.layer_get/cnc_keyword_combine_literature.csv"
-    combine_list_p = get_combine_list(combine_path_p)
-    combine_list_l = get_combine_list(combine_path_l)
+    esp_p, ms_p = 10, 1
+    esp_l, ms_l = 10, 1
+    combine_list_p = make_coule_file('patent', esp_p, ms_p)
+    combine_list_l = make_coule_file('literature', esp_l, ms_l)
     combine_list = combine_combine_list(combine_list_p, combine_list_l)
 
     # 最终的获取index

@@ -113,15 +113,15 @@ class NetworkMaker:
                     if dis_flag(dis, dis_threshold):
                         self.node_neighbor_dict_2[node_list[i]].append(node_list[j])
 
-    def link_trans(self):
+    def link_trans(self, weight_set):
         """
         add norm
         """
         # weight_collect = []
-        
+
         for link, weight in self.link_list_counter.items():
             s, t = [int(node) for node in link.split(' | ')]
-            if weight >= 50:  # 关键参数2
+            if weight >= weight_set:  # 关键参数2
                 # weight_collect.append(weight)
                 self.link_list_weighted.append([s, t, weight])
         # print(scipy.stats.normaltest(weight_collect))
@@ -143,7 +143,7 @@ class NetworkMaker:
         weight = len(set(node_i_1) & set(node_j_1)) + len(set(node_i_2) & set(node_j_2))
         return weight
 
-    def network_make(self):
+    def network_make(self, weight_set):
         """
         网络构建
         两个循环，
@@ -163,7 +163,7 @@ class NetworkMaker:
                 if weight:
                     self.link_list_counter[str(i) + ' | ' + str(j)] += weight
         # 字典转list
-        self.link_trans()
+        self.link_trans(weight_set)
         print(len(self.link_list_weighted))
         with open(self.save_path, 'w', encoding='UTF-8') as file:
             json.dump(self.link_list_weighted, file)
@@ -171,9 +171,10 @@ class NetworkMaker:
 
 if __name__ == '__main__':
     label = sys.argv[1]
+    weight = int(sys.argv[2])
     keyword_path = '../data/1.keyword_get/cnc_keywords_' + label + '.json'
     doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
     link_save_path = '../data/2.layer_get/cnc_keywords_link_' + label + '.json'
 
     network_maker = NetworkMaker(keyword_path, doc_path, link_save_path)
-    network_maker.network_make()
+    network_maker.network_make(weight)
