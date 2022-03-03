@@ -132,9 +132,9 @@ def get_couple_inf(label):
             num_cluster_dict['eps_' + str(eps) + '_ms_' + str(ms)] = count
             # print('eps', eps, 'ms', ms, 'num of cluster', len(keyword_set), 'num of couple', count)
 
-    df = pd.DataFrame(num_cluster, index=eps_list, columns=ms_list)
-    ax = sns.heatmap(df, annot=True)
-    plt.savefig('../data/fig/heatmap_' + label + '.png')
+    # df = pd.DataFrame(num_cluster, index=eps_list, columns=ms_list)
+    # ax = sns.heatmap(df, annot=True)
+    # plt.savefig('../data/fig/heatmap_' + label + '.png')
 
     return sorted(num_cluster_dict.items(), key=lambda x: x[1], reverse=True)
 
@@ -190,5 +190,7 @@ if __name__ == '__main__':
     couple_inf_dict_lit = [para[0] for para in couple_inf_dict_lit]
 
     df = pd.DataFrame(index_len_map, index=couple_inf_dict_pat, columns=couple_inf_dict_lit)
+    df.to_csv('../data/fig/heatmap_index_len.csv')
     ax = sns.heatmap(df, annot=True)
+    plt.show()
     plt.savefig('../data/fig/heatmap_index_len.png')

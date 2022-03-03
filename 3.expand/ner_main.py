@@ -28,13 +28,15 @@ def train():
     model_save_path = '../data/3.expend/ner_model'
     make_path(model_save_path)
     # 生成数据+数据预处理
-    with open('../data/3.expend/test_input/ner_dataset.json', 'r', encoding='UTF-8') as file:
-        data_list = json.load(file)
-    with open('../data/3.expend/test_input/tag_dict.json', 'r', encoding='UTF-8') as file:
+    with open('../data/3.expend/ner_dataset_train.json', 'r', encoding='UTF-8') as file:
+        data_list_train = json.load(file)
+    with open('../data/3.expend/ner_dataset_test.json', 'r', encoding='UTF-8') as file:
+        data_list_test = json.load(file)
+    with open('../data/3.expend/tag_dict.json', 'r', encoding='UTF-8') as file:
         tag_dict = json.load(file)
-    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[:10000], tag_dict, max_len)
-    loader = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), batch_size, True)
-    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[10000:12000], tag_dict, max_len)
+    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list_train, tag_dict, max_len)
+    loader_train = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), batch_size, True)
+    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list_test, tag_dict, max_len)
     loader_eval = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), batch_size, True)
     print('loader done.')
     # 载入模型、优化器
@@ -52,7 +54,7 @@ def train():
         # train
         my_ner.train()
         loss_collector = []
-        for i, data in enumerate(loader):
+        for i, data in enumerate(loader_train):
             # 数据载入
             tokens_tensor, segments_tensor, mask_tensor, tag_tenser, lens_list = data
             # forward和loss
@@ -87,7 +89,7 @@ def train():
             acc = get_accuracy(pre_tenser, tag_tenser)
             acc_collector.append(acc)
         acc_mean = np.mean(acc_collector)
-        print('loss:', loss_mean, 'acc:', acc_mean)
+        print('epoch', epoch, 'loss:', loss_mean, 'acc:', acc_mean)
 
 
 if __name__ == '__main__':
