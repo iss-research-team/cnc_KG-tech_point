@@ -15,15 +15,15 @@ def train():
     # parameter
     epochs = 100
     batch_size = 8
-    max_len = 128
+    max_len = 32
     embed_dim = 768
     # bi_lstm parameter
     lstm_dim = 256
-    lstm_layers = 6
-    dropout_lstm = 0.4
+    lstm_layers = 4
+    dropout_lstm = 0.2
     dropout = 0.2
     # crf parameter
-    num_tag = 18
+    num_tag = 3
     # model save
     model_save_path = '../data/3.expend/ner_model'
     make_path(model_save_path)
@@ -32,11 +32,9 @@ def train():
         data_list_train = json.load(file)
     with open('../data/3.expend/ner_dataset_test.json', 'r', encoding='UTF-8') as file:
         data_list_test = json.load(file)
-    with open('../data/3.expend/tag_dict.json', 'r', encoding='UTF-8') as file:
-        tag_dict = json.load(file)
-    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list_train, tag_dict, max_len)
+    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list_train[:2000], max_len)
     loader_train = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), batch_size, True)
-    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list_test, tag_dict, max_len)
+    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list_test[:500], max_len)
     loader_eval = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), batch_size, True)
     print('loader done.')
     # 载入模型、优化器
@@ -86,7 +84,7 @@ def train():
             pre_tenser = my_ner.predict(feats,
                                         attention_mask=mask_tensor.to(device))
 
-            acc = get_accuracy(pre_tenser, tag_tenser)
+            acc = get_accuracy(pre_tenser, tag_tenser.tolist(), lens_list.tolist())
             acc_collector.append(acc)
         acc_mean = np.mean(acc_collector)
         print('epoch', epoch, 'loss:', loss_mean, 'acc:', acc_mean)

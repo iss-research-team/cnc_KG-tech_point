@@ -37,12 +37,14 @@ def get_keyword_seq(kw_list, s):
     :param s:
     :return:
     """
+    node_list = []
     node_trans_list = []
 
     for node in kw_list:
         if node not in s:
             continue
         else:
+            node_list.append(node)
             node_length = node.count(' ') - 1
             bit = 0
             for i in range(s.count(node)):
@@ -52,7 +54,7 @@ def get_keyword_seq(kw_list, s):
                 node_trans_list.append(node_trans)
                 bit += 1
 
-    return node_trans_list
+    return node_list, node_trans_list
 
 
 def overlap_check(node_list):
@@ -80,6 +82,25 @@ def get_target_list(node_list, target_list):
     return target_list
 
 
+def sentence_trans(sentence_list):
+    """
+    make sentences longer
+    :param source_list:
+    :return:
+    """
+    sentence_list_trans = []
+    sentence_temper = []
+    for sentence in sentence_list:
+        sentence_temper += sentence.split()
+        if 128 > len(sentence_temper) > 100:
+            sentence_list_trans.append(' '.join(sentence_temper))
+            sentence_temper = []
+    # 更精简的数据集
+    # sentence_list_trans.append(' '.join(sentence_temper))
+
+    return sentence_list_trans
+
+
 def make_dataset(tech_point_list, doc_list):
     """
     这里的标记用一个小技巧，作用可能有限，但是希望日后有用（和秋静打电话的时候想到的）
@@ -94,18 +115,16 @@ def make_dataset(tech_point_list, doc_list):
     dataset = []
     for doc in tqdm(doc_list):
         sentence_list = doc.split('. ')
+        # 这里做出第一个调整，一个句子太短了，把几个句子合成一个句子，一个句子的长度在128左右。
+        sentence_list = sentence_trans(sentence_list)
         for sentence in sentence_list:
-            node_trans_list = get_keyword_seq(tech_point_list, ' ' + sentence + ' ')
-            if not node_trans_list:
+            node_list, node_trans_list = get_keyword_seq(tech_point_list, ' ' + sentence + ' ')
+            if not node_list:
                 continue
             # 时间有限，这边只进行简的check
-            if overlap_check(node_trans_list):
-                source_list = sentence.split()
-                target_list = get_target_list(node_trans_list, ["O" for _ in range(len(source_list))])
-
-                # 这里再加一个限制条件，保证训练集的质量
-                if 20 > len(source_list) > 10:
-                    dataset.append([source_list, target_list])
+            if not overlap_check(node_trans_list):
+                continue
+            dataset.append([sentence, node_list])
     return dataset
 
 
