@@ -90,6 +90,6 @@ class MyNER(nn.Module):
         return loss
 
     def predict(self, feats, attention_mask):
-        # loss
+        # predict
         pre_tenser = self.crf.decode(feats, mask=attention_mask.byte())
         return pre_tenser
