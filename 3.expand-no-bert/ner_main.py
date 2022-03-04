@@ -14,9 +14,9 @@ from torchsummary import summary
 def train():
     # parameter
     epochs = 100
-    batch_size = 8
+    batch_size = 32
     max_len = 32
-    embed_dim = 768
+    embed_dim = 512
     # bi_lstm parameter
     lstm_dim = 256
     lstm_layers = 4
