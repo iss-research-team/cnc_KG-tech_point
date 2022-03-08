@@ -119,11 +119,11 @@ def make_path(path):
         os.mkdir(path)
 
 
-if __name__ == "__main__":
-    # 生成数据+数据预处理
-    max_len = 128
-    with open('../data/3.expend/test_input/ner_dataset_public.json', 'r', encoding='UTF-8') as file:
-        data_list_train = json.load(file)
-    with open('../data/3.expend/test_input/ner_tag_dict_public.json', 'r', encoding='UTF-8') as file:
-        tag_dict = json.load(file)
-    make_data(data_list_train[:2000], tag_dict, max_len, num_class=8)
+# if __name__ == "__main__":
+#     # 生成数据+数据预处理
+#     max_len = 128
+#     with open('../data/3.expend/test_input/ner_dataset_public.json', 'r', encoding='UTF-8') as file:
+#         data_list_train = json.load(file)
+#     with open('../data/3.expend/test_input/ner_tag_dict_public.json', 'r', encoding='UTF-8') as file:
+#         tag_dict = json.load(file)
+#     make_data(data_list_train[:2000], tag_dict, max_len, num_class=8)

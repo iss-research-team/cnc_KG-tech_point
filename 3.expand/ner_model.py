@@ -41,14 +41,19 @@ class MyDataSet(Data.Dataset):
 
 
 class MyNER(nn.Module):
-    def __init__(self, batch_size, num_tag, max_len, embed_dim, lstm_dim, lstm_layers, lstm_dropout, dropout):
+    def __init__(self, batch_size, num_tag, max_len, embed_dim,
+                 lstm_dim, lstm_layers, lstm_dropout,
+                 dropout, if_load_pretrain):
         super(MyNER, self).__init__()
         self.batch_size = batch_size
         self.max_len = max_len
         self.lstm_dim = lstm_dim
         self.lstm_layers = lstm_layers
         # bert config
-        self.word_embeds = BertModel.from_pretrained('bert-base-uncased')
+        if if_load_pretrain:
+            self.word_embeds = BertModel.from_pretrained('../bert-medium-pretrain')
+        else:
+            self.word_embeds = BertModel.from_pretrained('bert-base-uncased')
         # Bilstm
         self.lstm = torch.nn.LSTM(input_size=embed_dim, hidden_size=lstm_dim, num_layers=lstm_layers,
                                   batch_first=True, dropout=lstm_dropout, bidirectional=True)

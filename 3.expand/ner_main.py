@@ -9,24 +9,15 @@ import sys
 
 from ner_model import *
 from ner_utils_plus import *
+from ner_parser import *
 
 from torchsummary import summary
 
 
 def train():
     # parameter
-    epochs = 100
-    batch_size = sys.argv[1]
-    max_len = 128
-    embed_dim = 768
-    # bi_lstm parameter
-    lstm_dim = 256
-    lstm_layers = 4
-    dropout_lstm = 0.2
-    dropout = 0.2
-    # crf parameter
-    num_class = 8
-    num_tag = 17
+    args = parameter_parser()
+
     # model save
     model_save_path = '../data/3.expend/ner_model'
     make_path(model_save_path)
@@ -35,23 +26,25 @@ def train():
         data_list = json.load(file)
     with open('../data/3.expend/test_input/ner_tag_dict_public.json', 'r', encoding='UTF-8') as file:
         tag_dict = json.load(file)
-    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[:20000], tag_dict, max_len, num_class)
-    loader_train = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), batch_size, True)
-    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[20000:25000], tag_dict, max_len, num_class)
-    loader_eval = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), batch_size, True)
+    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[:20000], tag_dict,
+                                                                   args.max_len, args.num_class)
+    loader_train = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), args.batch_size, True)
+    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[20000:25000], tag_dict,
+                                                                   args.max_len, args.num_class)
+    loader_eval = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), args.batch_size, True)
     print('loader done.')
     # 载入模型、优化器
     # cuda
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print('device:', device)
-    my_ner = MyNER(batch_size, num_tag, max_len, embed_dim,
-                   lstm_dim, lstm_layers, dropout_lstm, dropout).to(device)
+    my_ner = MyNER(args.batch_size, args.num_tag, args.max_len, args.embed_dim,
+                   args.lstm_dim, args.lstm_layers, args.lstm_dropout, args.dropout, args.if_load_pretrain).to(device)
     # 打印模型结构
     summary(my_ner)
 
     optimizer = optim.Adam(my_ner.parameters(), lr=0.0001)
 
-    for epoch in tqdm(range(epochs)):
+    for epoch in tqdm(range(args.epochs)):
         # train
         my_ner.train()
         loss_collector = []
