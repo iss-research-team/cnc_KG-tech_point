@@ -5,6 +5,8 @@
 # @FileName: ner_main.py
 # @Software: PyCharm
 
+import sys
+
 from ner_model import *
 from ner_utils_plus import *
 
@@ -14,7 +16,7 @@ from torchsummary import summary
 def train():
     # parameter
     epochs = 100
-    batch_size = 8
+    batch_size = sys.argv[1]
     max_len = 128
     embed_dim = 768
     # bi_lstm parameter
