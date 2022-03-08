@@ -92,10 +92,9 @@ def sentence_trans(sentence_list):
     sentence_temper = []
     for sentence in sentence_list:
         sentence_temper += sentence.split()
-        if 128 > len(sentence_temper) > 100:
+        if 40 > len(sentence_temper) > 30:
             sentence_list_trans.append(' '.join(sentence_temper))
             sentence_temper = []
-    # 更精简的数据集
     # sentence_list_trans.append(' '.join(sentence_temper))
 
     return sentence_list_trans
@@ -115,7 +114,7 @@ def make_dataset(tech_point_list, doc_list):
     dataset = []
     for doc in tqdm(doc_list):
         sentence_list = doc.split('. ')
-        # 这里做出第一个调整，一个句子太短了，把几个句子合成一个句子，一个句子的长度在128左右。
+        # 这里做出第一个调整，一个句子太短了，把几个句子合成一个句子，一个句子的长度在30左右。
         sentence_list = sentence_trans(sentence_list)
         for sentence in sentence_list:
             node_list, node_trans_list = get_keyword_seq(tech_point_list, ' ' + sentence + ' ')
@@ -136,7 +135,7 @@ if __name__ == "__main__":
     print("dataset size:", len(dataset))
     cut_bit = int(0.7 * len(dataset))
 
-    with open('../data/3.expend/ner_dataset_train.json', 'w', encoding='UTF-8') as file:
+    with open('../data/3.expend/ner_dataset_train-50.json', 'w', encoding='UTF-8') as file:
         json.dump(dataset[:cut_bit], file)
-    with open('../data/3.expend/ner_dataset_test.json', 'w', encoding='UTF-8') as file:
+    with open('../data/3.expend/ner_dataset_test-50.json', 'w', encoding='UTF-8') as file:
         json.dump(dataset[cut_bit:], file)

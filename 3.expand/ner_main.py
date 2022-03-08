@@ -6,7 +6,7 @@
 # @Software: PyCharm
 
 from ner_model import *
-from ner_utils import *
+from ner_utils_plus import *
 
 from torchsummary import summary
 
@@ -15,7 +15,7 @@ def train():
     # parameter
     epochs = 100
     batch_size = 8
-    max_len = 32
+    max_len = 128
     embed_dim = 768
     # bi_lstm parameter
     lstm_dim = 256
@@ -23,18 +23,19 @@ def train():
     dropout_lstm = 0.2
     dropout = 0.2
     # crf parameter
-    num_tag = 3
+    num_class = 8
+    num_tag = 17
     # model save
     model_save_path = '../data/3.expend/ner_model'
     make_path(model_save_path)
     # 生成数据+数据预处理
-    with open('../data/3.expend/ner_dataset_train.json', 'r', encoding='UTF-8') as file:
-        data_list_train = json.load(file)
-    with open('../data/3.expend/ner_dataset_test.json', 'r', encoding='UTF-8') as file:
-        data_list_test = json.load(file)
-    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list_train[:2000], max_len)
+    with open('../data/3.expend/test_input/ner_dataset_public.json', 'r', encoding='UTF-8') as file:
+        data_list = json.load(file)
+    with open('../data/3.expend/test_input/ner_tag_dict_public.json', 'r', encoding='UTF-8') as file:
+        tag_dict = json.load(file)
+    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[:20000], tag_dict, max_len, num_class)
     loader_train = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), batch_size, True)
-    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list_test[:500], max_len)
+    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[20000:25000], tag_dict, max_len, num_class)
     loader_eval = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), batch_size, True)
     print('loader done.')
     # 载入模型、优化器

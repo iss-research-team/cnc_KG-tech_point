@@ -73,10 +73,10 @@ class MyNER(nn.Module):
         # BERT
         embeds = self.word_embeds(tokens_tensor, segments_tensor, attention_mask)[0]
         # Bilstm
-        batch_packed = rnn.pack_padded_sequence(input=embeds, lengths=lens.cpu(),
-                                                batch_first=True, enforce_sorted=False)
-        lstm_out, _ = self.lstm(batch_packed, (self.hidden, self.cell))
-        output = rnn.pad_packed_sequence(lstm_out, batch_first=True, total_length=self.max_len)[0]
+        # batch_packed = rnn.pack_padded_sequence(input=embeds, lengths=lens.cpu(), batch_first=True,
+        #                                         enforce_sorted=False)
+        output, _ = self.lstm(embeds)
+        # output = rnn.pad_packed_sequence(output, batch_first=True, total_length=self.max_len)[0]
         # linear
         output = self.dropout(output)
         output = self.linear_lstm(output)
