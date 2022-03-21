@@ -98,8 +98,8 @@ def make_data(data_list, tag_dict, max_len, num_class):
 def get_accuracy(pre_tenser, tag_tenser, lens_list):
     acc_list = []
     for p_t, t_t, length in zip(pre_tenser, tag_tenser, lens_list):
-        # print(p_t)
-        # print(t_t)
+        print(p_t)
+        print(t_t)
         num_tag = 0
         num_tag_acc = 0
         for bit in range(length):

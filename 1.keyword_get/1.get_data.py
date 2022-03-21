@@ -22,10 +22,11 @@ class DataProcess:
     对文本的进一步的预处理
     """
 
-    def __init__(self, label, doc_path, keyword_path):
+    def __init__(self, label, doc_path, doc_index_path, keyword_path):
         self.label = label
         print('label:', label)
         self.doc_path = doc_path
+        self.doc_index_path = doc_index_path
         self.keyword_path = keyword_path
 
         # 处理过程中用到的正则表达式子
@@ -193,8 +194,11 @@ class DataProcess:
         """
         with open('../data/0.preprocessed_file/doc_dict_' + self.label + '.json', 'r', encoding='UTF-8') as file:
             data_dict = json.load(file)
+        with open('../data/0.preprocessed_file/doc_' + self.label + '2index.json', 'r', encoding='UTF-8') as file:
+            index_dict = json.load(file)
         # write
         f_write = open(self.doc_path, 'w', encoding='UTF-8')
+        doc2index = dict()
         print('文本数量：', len(data_dict))
         count = 0
         for t, inf in tqdm(data_dict.items()):
@@ -213,12 +217,15 @@ class DataProcess:
                 keyword = self.get_keywords_lite(keyword)
 
             f_write.write(doc + '\n')
+            doc2index[doc] = index_dict[t]
             self.keywords += keyword
             # count += 1
             # if count == 500:
             #     break
 
         f_write.close()
+        with open(self.doc_index_path, 'w', encoding='UTF-8') as file:
+            json.dump(doc2index, file)
 
     def save_keywords(self):
         """
@@ -241,8 +248,9 @@ class DataProcess:
 if __name__ == '__main__':
     label = sys.argv[1]
     doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
+    doc_index_path = '../data/1.keyword_get/cnc_doc_' + label + '2index.json'
     keyword_path = '../data/1.keyword_get/cnc_keywords_base_' + label + '.txt'
 
-    data_process = DataProcess(label, doc_path, keyword_path)
+    data_process = DataProcess(label, doc_path, doc_index_path, keyword_path)
     data_process.get_date()
     data_process.save_keywords()

@@ -26,10 +26,10 @@ def train():
         data_list = json.load(file)
     with open('../data/3.expend/test_input/ner_tag_dict_public.json', 'r', encoding='UTF-8') as file:
         tag_dict = json.load(file)
-    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[:20000], tag_dict,
+    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[:100], tag_dict,
                                                                    args.max_len, args.num_class)
     loader_train = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), args.batch_size, True)
-    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[20000:25000], tag_dict,
+    tok_list, seg_list, mask_list, tag_list, lens_list = make_data(data_list[100:124], tag_dict,
                                                                    args.max_len, args.num_class)
     loader_eval = Data.DataLoader(MyDataSet(tok_list, seg_list, mask_list, tag_list, lens_list), args.batch_size, True)
     print('loader done.')

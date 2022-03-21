@@ -13,9 +13,9 @@ def parameter_parser():
     # bi_lstm parameter
     parser.add_argument("--lstm_dim", type=int, default=256)
     parser.add_argument("--lstm_layers", type=int, default=4)
-    parser.add_argument("--lstm_dropout", type=float, default=0.2)
+    parser.add_argument("--lstm_dropout", type=float, default=0.5)
     # crf parameter
-    parser.add_argument("--dropout", type=float, default=0.2)
+    parser.add_argument("--dropout", type=float, default=0.5)
     parser.add_argument("--num_class", type=int, default=8)
     parser.add_argument("--num_tag", type=int, default=17)
 

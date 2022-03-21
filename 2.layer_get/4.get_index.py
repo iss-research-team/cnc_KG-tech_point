@@ -13,6 +13,27 @@ from sklearn.cluster import DBSCAN
 from collections import defaultdict
 
 
+def make_coule_file(label, eps, ms):
+    node_feature_path = "../data/2.layer_get/node_emb_net_" + label + ".npy"
+    x = np.load(node_feature_path, encoding="latin1")
+    node_feature_path = "../data/1.keyword_get/cnc_keywords_" + label + ".json"
+    with open(node_feature_path, 'r', encoding='UTF-8') as file:
+        node_list = json.load(file)
+
+    y_pred = DBSCAN(eps=eps, min_samples=ms).fit_predict(x)
+    keyword_set = defaultdict(set)
+
+    for index, cluster in enumerate(y_pred.tolist()):
+        if cluster == -1:
+            continue
+        keyword_set[cluster].add(node_list[index])
+
+    keyword_set_list = list(keyword_set.values())
+    keyword_set_list = [list(keywords) for keywords in keyword_set_list]
+
+    return keyword_set_list
+
+
 def get_combine_list(combine_path):
     """
     将csv转换成list
@@ -48,10 +69,11 @@ def combine_combine_list(combine_list_1, combine_list_2):
     return combine_list
 
 
-def get_index(combine_list, keyword2index_path, index2embed_path):
+def get_index(combine_list, keyword2index_path, index2keyword_path, index2embed_path):
     # 构建两个字典
     # 一个用于存储embed，一个存储词表
     keyword2index = dict()
+    index2keyword = defaultdict(set)
     index2embed = dict()
 
     with open('../data/1.keyword_get/cnc_keywords_patent.json', 'r', encoding='UTF-8') as file:
@@ -75,6 +97,7 @@ def get_index(combine_list, keyword2index_path, index2embed_path):
         emb = np.zeros(512)
         for node in combine:
             keyword2index[node] = index
+            index2keyword[index].add(node)
             if node in keyword_dict_patent:
                 emb += np.array(keyword_dict_patent[node])
             if node in keyword_dict_literature:
@@ -82,9 +105,12 @@ def get_index(combine_list, keyword2index_path, index2embed_path):
         index2embed[index] = emb.tolist()
         index += 1
 
+    # DBS聚类过程中可能会出现
     for node in keyword_list:
         if node in keyword2index:
             continue
+        keyword2index[node] = index
+        index2keyword[index].add(node)
         emb = np.zeros(512)
         if node in keyword_dict_patent:
             emb += np.array(keyword_dict_patent[node])
@@ -94,30 +120,14 @@ def get_index(combine_list, keyword2index_path, index2embed_path):
         index += 1
 
     print('关键词数量：', len(index2embed))
+    index2keyword = dict((index, list(keyword_set)) for index, keyword_set in index2keyword.items())
 
     with open(keyword2index_path, 'w', encoding='UTF-8') as file:
         json.dump(keyword2index, file)
+    with open(index2keyword_path, 'w', encoding='UTF-8') as file:
+        json.dump(index2keyword, file)
     with open(index2embed_path, 'w', encoding='UTF-8') as file:
         json.dump(index2embed, file)
-
-
-def make_coule_file(label, eps, ms):
-    node_feature_path = "../data/2.layer_get/node_emb_net_" + label + ".npy"
-    x = np.load(node_feature_path, encoding="latin1")
-    node_feature_path = "../data/1.keyword_get/cnc_keywords_" + label + ".json"
-    with open(node_feature_path, 'r', encoding='UTF-8') as file:
-        node_list = json.load(file)
-
-    y_pred = DBSCAN(eps=eps, min_samples=ms).fit_predict(x)
-    keyword_set = defaultdict(set)
-
-    for index, cluster in enumerate(y_pred.tolist()):
-        keyword_set[cluster].add(node_list[index])
-
-    keyword_set_list = list(keyword_set.values())
-    keyword_set_list = [list(keywords) for keywords in keyword_set_list]
-
-    return keyword_set_list
 
 
 if __name__ == '__main__':
@@ -134,6 +144,7 @@ if __name__ == '__main__':
 
     # 最终的获取index
     keyword2index_path = "../data/2.layer_get/keyword2index.json"
+    index2keyword_path = "../data/2.layer_get/index2keyword.json"
     index2embed_path = "../data/2.layer_get/index2embed.json"
 
-    get_index(combine_list, keyword2index_path, index2embed_path)
+    get_index(combine_list, keyword2index_path, index2keyword_path, index2embed_path)
