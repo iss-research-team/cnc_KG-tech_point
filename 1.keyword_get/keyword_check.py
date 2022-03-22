@@ -11,9 +11,9 @@
 import json
 
 if __name__ == '__main__':
-    with open('../data/input/cnc_keywords_patent.json') as file:
+    with open('../data/1.keyword_get/cnc_keywords_patent.json') as file:
         kw_list_p = json.load(file)
-    with open('../data/input/cnc_keywords_literature.json') as file:
+    with open('../data/1.keyword_get/cnc_keywords_literature.json') as file:
         kw_list_l = json.load(file)
 
     print('num of kw in p:', len(kw_list_p))

@@ -119,7 +119,7 @@ if __name__ == '__main__':
     save_path_s = '../data/1.keyword_get/cnc_keywords_single_' + label + '.txt'
     save_path_m = '../data/1.keyword_get/cnc_keywords_multiple_' + label + '.txt'
 
-    min_freq = 1000
+    min_freq = 500
     topmine_add = TopmineAdd(index_path, seg_path, min_freq)
     topmine_add.add_base_keywords(keyword_base_path)
     topmine_add.get_keywords(save_path_s, save_path_m)
