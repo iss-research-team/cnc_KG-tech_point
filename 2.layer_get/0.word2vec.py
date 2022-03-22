@@ -13,7 +13,7 @@ import torch
 import numpy as np
 import sys
 
-from transformers import BertTokenizer, BertConfig, BertModel
+from transformers import BertTokenizer, BertModel
 from tqdm import tqdm
 
 
@@ -31,7 +31,7 @@ def get_word_dict():
 
 
 class WordEmbed():
-    def __init__(self, keywords_path, doc_path, save_path):
+    def __init__(self, if_load_pretrain, keywords_path, doc_path, save_path):
         self.keywords_path = keywords_path
         self.doc_path = doc_path
         self.save_path = save_path
@@ -40,9 +40,12 @@ class WordEmbed():
             self.node_list = json.load(file)
         self.node_dict = dict(zip(self.node_list, [i for i in range(len(self.node_list))]))
         # model
-        self.model_path = '../checkpoint'
-        # self.model_name = 'bert_medium_uncased'
-
+        if if_load_pretrain == "ture":
+            self.save_path += 'pretrain'
+            self.model_path = '../bert-medium-pretrain'
+        else:
+            self.save_path += 'origin'
+            self.model_name = 'prajjwal1/bert-medium'
         # result
         self.node_embed = np.zeros((len(self.node_list), 512))
 
@@ -143,19 +146,18 @@ class WordEmbed():
         引入第二种行归一化的方式。
         :return:
         '''
-
         self.node_embed = torch.nn.LayerNorm(512)(torch.Tensor(self.node_embed))
         self.node_embed = self.node_embed.detach().numpy()
-
         # 结果写入
         np.save(self.save_path, self.node_embed)
 
 
 if __name__ == '__main__':
     label = sys.argv[1]
+    if_load_pretrain = sys.argv[2]
     keywords_path = '../data/1.keyword_get/cnc_keywords_' + label + '.json'
     doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
-    result_save_path = '../data/2.layer_get/node_emb_word_' + label + '.npy'
-    word_embed = WordEmbed(keywords_path, doc_path, result_save_path)
+    result_save_path = '../data/2.layer_get/node_emb_word_' + label
+    word_embed = WordEmbed(if_load_pretrain, keywords_path, doc_path, result_save_path)
     word_embed.get_bert_feature()
     word_embed.emb_save()
