@@ -54,7 +54,7 @@ class WordEmbed():
         载入bert模型
         :return:
         '''
-        print('model loading...')
+        print('model loading...', self.model_path)
         # 通过词典导入分词器
         self.tokenizer = BertTokenizer.from_pretrained('prajjwal1/bert-medium')
         # 通过配置和路径导入模型
