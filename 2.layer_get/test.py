@@ -66,12 +66,5 @@ def get_keyword_seq(s, node_dict):
                 # 上位位邻居
                 node_neighbor_dict_2[node_list[i]].append(neighbor_inf)
 
-    print(node_list)
-    print(node_start_list)
-    print(node_length_list)
-
 
 get_keyword_seq(a, n_dict)
-
-print(node_neighbor_dict_1)
-print(node_neighbor_dict_2)

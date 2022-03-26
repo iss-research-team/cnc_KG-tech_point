@@ -162,17 +162,18 @@ class MyDataSet(Data.Dataset):
 if __name__ == '__main__':
     # 参数设置
     d = 512
-    batch_size = 32
-    epochs = 2
+    batch_size = 64
+    epochs = 1000
 
-    label = sys.argv[1]
+    label = 'patent'
+    if_trans = 'origin'
     node_path = "../data/1.keyword_get/cnc_keywords_" + label + ".json"
-    link_path = "../data/2.layer_get/cnc_keywords_link_" + label + ".json"
+    link_path = "../data/2.layer_get/link/cnc_keywords_link_" + label + "_" + if_trans + ".json"
 
     ng_num = 5
 
-    node_feature_path = "../data/2.layer_get/node_emb_word_" + label + ".npy"
-    node_emb_path = "../data/2.layer_get/node_emb_net_" + label
+    node_feature_path = "../data/2.layer_get/node_emb/node_emb_word_" + label + "_pretrain.npy"
+    node_emb_path = "../data/2.layer_get/node_emb/node_emb_net_" + label + "_" + if_trans
     if not os.path.exists(node_emb_path):
         os.mkdir(node_emb_path)
 
@@ -206,5 +207,5 @@ if __name__ == '__main__':
         ave_loss.append(np.mean(loss_collector))
         if epoch > 0 and epoch % 10 == 0:
             line.save_embedding(os.path.join(node_emb_path, "epoch_" + str(epoch)))
-    loss_save_path = '../data/fig/embed_loss_' + label + '.png'
+    loss_save_path = '../fig/2.layer_get/embed_loss_' + label + "_" + if_trans + '.png'
     loss_draw(epochs, ave_loss, loss_save_path)

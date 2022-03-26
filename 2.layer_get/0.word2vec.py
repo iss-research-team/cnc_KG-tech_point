@@ -41,10 +41,10 @@ class WordEmbed():
         self.node_dict = dict(zip(self.node_list, [i for i in range(len(self.node_list))]))
         # model
         if if_load_pretrain == "ture":
-            self.save_path += 'pretrain'
+            self.save_path += '_pretrain'
             self.model_path = '../bert-medium-pretrain'
         else:
-            self.save_path += 'origin'
+            self.save_path += '_origin'
             self.model_name = 'prajjwal1/bert-medium'
         # result
         self.node_embed = np.zeros((len(self.node_list), 512))

@@ -43,7 +43,7 @@ class TopmineAdd():
         with open(keyword_base_path, 'r', encoding='UTF-8') as file:
             keywords = json.load(file)
         keywords = [keyword for keyword in keywords if keyword.count(' ') <= 5]
-        print('专利尾部的关键词总数：', len(keywords))
+        # print('专利尾部的关键词总数：', len(keywords))
         count = 0
         for keyword in keywords:
             if ' ' in keyword:
@@ -66,7 +66,7 @@ class TopmineAdd():
                     count += 1
                 except KeyError:
                     continue
-        print('其中可用的数量：', count)
+        # print('其中可用的数量：', count)
 
     def get_frequency(self):
         '''
@@ -77,7 +77,7 @@ class TopmineAdd():
         :return:
         '''
         docs = open(self.seg_path, 'r', encoding='UTF-8')
-        for doc in tqdm(docs):
+        for doc in docs:
             words = doc.split(', ')
             for word in words:
                 if ' ' in word:
@@ -99,7 +99,8 @@ class TopmineAdd():
                 word_trans = ' '.join([self.index2word[int(index)] for index in word.split()])
                 file.write(word_trans + '\n')
                 count += 1
-        print('num-keyword-m:', count)
+        # print('num-keyword-m:', count)
+        num_keyword_m = count
         # 存储单词
         count = 0
         file = open(save_path_s, 'w', encoding='UTF-8')
@@ -108,7 +109,9 @@ class TopmineAdd():
                 word_trans = self.index2word[int(word)]
                 file.write(word_trans + '\n')
                 count += 1
-        print('num-keyword-s:', count)
+        # print('num-keyword-s:', count)
+        num_keyword_s = count
+        return num_keyword_m, num_keyword_s
 
 
 if __name__ == '__main__':
@@ -119,7 +122,17 @@ if __name__ == '__main__':
     save_path_s = '../data/1.keyword_get/cnc_keywords_single_' + label + '.txt'
     save_path_m = '../data/1.keyword_get/cnc_keywords_multiple_' + label + '.txt'
 
-    min_freq = 500
-    topmine_add = TopmineAdd(index_path, seg_path, min_freq)
-    topmine_add.add_base_keywords(keyword_base_path)
-    topmine_add.get_keywords(save_path_s, save_path_m)
+    num_m_list = []
+    num_s_list = []
+
+    freq_list = [10 + i * 10 for i in range(100)]
+
+    for min_freq in tqdm(freq_list):
+        topmine_add = TopmineAdd(index_path, seg_path, min_freq)
+        topmine_add.add_base_keywords(keyword_base_path)
+        num_keyword_m, num_keyword_s = topmine_add.get_keywords(save_path_s, save_path_m)
+        num_m_list.append(num_keyword_m)
+        num_s_list.append(num_keyword_s)
+
+    with open('../fig/1.keyword_get/keyword_num_' + label + '.json', 'w', encoding='UTF-8') as file:
+        json.dump([freq_list, num_s_list, num_m_list], file)
