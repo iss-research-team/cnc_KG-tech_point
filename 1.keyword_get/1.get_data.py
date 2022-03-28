@@ -5,6 +5,12 @@
 # @FileName: 1.get_data.py
 # @Software: PyCharm
 
+"""
+晚上解决两个问题：
+1.连字符
+2.数字替换
+"""
+
 import json
 import re
 import spacy
@@ -33,6 +39,17 @@ class DataProcess:
         self.pattern_patent = re.compile(r'\(.*?\)')
         self.pattern_lite = re.compile(r'\[.*?]')
         self.pattern_sp = re.compile(r'\s\W+\s')
+        self.pattern_number = re.compile(r'\s[0-9]\s')
+        self.num_trans_dict = {'0': 'zero',
+                               '1': 'one',
+                               '2': 'two',
+                               '3': 'three',
+                               '4': 'four',
+                               '5': 'five',
+                               '6': 'six',
+                               '7': 'seven',
+                               '8': 'eight',
+                               '9': 'nine'}
 
         # 词形还原的工具
         self.lemma_tool = spacy.load("en_core_web_sm")  # load package "en_core_web_sm"
@@ -60,33 +77,50 @@ class DataProcess:
             stopwords.add(line.rstrip())
         self.stopwords = stopwords
 
+    def number_trans(self, string):
+        """
+        补获文本中的数字，将其置换为英文
+        :return:
+        """
+        string = ' ' + string + ' '
+        number_list = re.findall(self.pattern_number, string)
+        for number in number_list:
+            string = string.replace(number, ' ' + self.num_trans_dict[number.strip()] + ' ')
+        return string.strip()
+
+    def str_deal(self, string):
+        """
+        获取句子或者词语的词形还原结果
+        :return:
+        """
+        string = self.lemma_tool(string)
+        string = ' '.join([token.lemma_ for token in string])
+        # 恢复连字符
+        string = string.replace(' - ', '-')
+        string = ' '.join([word for word in string.split() if word.lower() not in self.stopwords])
+        # 停词防止误伤后，去除连字符
+        string = string.replace('-', ' ')
+        string = self.number_trans(string)
+        string = string.lower()
+        return ' ' + string + ' '
+
     def doc_deal(self, doc):
         """
         获取句子或者词语的词形还原结果
         :return:
         """
-        doc = self.lemma_tool(doc)
-        doc = ' '.join([token.lemma_ for token in doc])
-        #  恢复连字符
-        doc = doc.replace(' - ', '-')
-        doc = ' '.join([word for word in doc.split() if word not in self.stopwords]) + ' '
-        doc = re.sub(self.pattern_sp, '. ', doc)
-        doc = doc.lower()
-        return doc
+        doc = self.str_deal(doc)
+        doc = re.sub(self.pattern_sp, ' ', doc)
+        return doc.strip() + '. '
 
-    def keyword_deal(self, doc):
+    def keyword_deal(self, keyword):
         """
         获取句子或者词语的词形还原结果
         :return:
         """
-        doc = re.sub(r"[,.;:!?|/\\]", ' ', doc)
-        doc = self.lemma_tool(doc)
-        doc = ' '.join([token.lemma_ for token in doc])
-        #  恢复连字符
-        doc = doc.replace(' - ', '-')
-        doc = ' '.join([word for word in doc.split() if word not in self.stopwords])
-        doc = doc.lower()
-        return doc
+        keyword = re.sub(r"[,.;:!?|/\\]", ' ', keyword)
+        keyword = self.str_deal(keyword)
+        return keyword.strip()
 
     def get_keywords_patent(self, keyword_temper):
         """
@@ -140,6 +174,32 @@ class DataProcess:
 
         return keyword_temper
 
+    def doc_trans(self, doc):
+        """
+        通用的处理，初步的处理
+        包括括号中的信息，引号等
+        :param doc:
+        :return:
+        """
+        doc = re.sub(r"['\"]", ' ', doc)
+        # 需要解决括号的问题
+        if self.label == 'patent':
+            char_list = re.findall(self.pattern_patent, doc)
+        else:
+            char_list = re.findall(self.pattern_lite, doc)
+
+        for char in char_list:
+            # 规则可以继续叠加
+            if char[1].isdigit() or \
+                    'non-English language text' in char:
+                doc = doc.replace(char, '')
+        doc = doc.replace(' e.g.', ',').replace(' i.e.', ',')
+        doc = doc.replace(' E.g.', ',').replace(' I.e.', ',')
+        doc = doc.replace(' E.G.', ',').replace(' I.E.', ',')
+        doc = ' '.join(doc.split())
+        doc = re.sub(r"\.\W*\.", '.', doc)
+        return doc.strip()
+
     def doc_trans_patent(self, doc):
         """
         针对专利数据
@@ -147,26 +207,17 @@ class DataProcess:
         :param doc:
         :return:
         """
-        doc = re.sub(r"['\"]", ' ', doc)
-        # 需要解决括号的问题
-        char_list = re.findall(self.pattern_patent, doc)
-        for char in char_list:
-            # 规则可以继续叠加
-            if char[1].isdigit() or \
-                    'non-English language text' in char:
-                doc = doc.replace(char, '')
-        doc = ' '.join(doc.split())
-        doc = doc.replace('..', '.').replace('. .', '.')
+        doc = self.doc_trans(doc)
         # 找到倒数两个句号，中间的话就是最后一句话
         doc_a, keywords_str = self.get_last_s(doc)
         # 修改这个判断的部分
         keywords_temper = self.get_keywords_patent(keywords_str)
         if keywords_temper:
-            doc = self.doc_deal(doc_a)
+            sentence_list = [self.doc_deal(sentence) for sentence in doc_a.split('. ')]
         else:
-            doc = self.doc_deal(doc)
+            sentence_list = [self.doc_deal(sentence) for sentence in doc.split('. ')]
         # 去除一些奇怪的连接符号
-        return doc.strip(), keywords_temper
+        return sentence_list, keywords_temper
 
     def doc_trans_lite(self, doc):
         """
@@ -174,18 +225,9 @@ class DataProcess:
         :param doc:
         :return:
         """
-        doc = re.sub(r"['\"]", ' ', doc)
-        # 需要解决括号的问题
-        char_list = re.findall(self.pattern_lite, doc)
-        for char in char_list:
-            # 规则可以继续叠加
-            if char[1].isdigit():
-                doc = doc.replace(char, '')
-        doc = ' '.join(doc.split())
-        doc = doc.replace('..', '.').replace('. .', '.')
-
-        doc = self.doc_deal(doc)
-        return doc.strip()
+        doc = self.doc_trans(doc)
+        sentence_list = [self.doc_deal(sentence) for sentence in doc.split('. ')]
+        return sentence_list
 
     def get_date(self):
         """
@@ -203,24 +245,25 @@ class DataProcess:
         count = 0
         for t, inf in tqdm(data_dict.items()):
             # 分流，专利处理
-            doc = ''
+            sentence_list = []
             keyword = []
             if self.label == 'patent':
                 doc = inf['doc']
                 # 关键词来自于文本的最后一句话
-                doc, keyword = self.doc_trans_patent(doc)
+                sentence_list, keyword = self.doc_trans_patent(doc)
             # 论文处理
             if self.label == 'literature':
                 doc = t + ' ' + inf['doc']
-                doc = self.doc_trans_lite(doc)
+                sentence_list = self.doc_trans_lite(doc)
                 keyword = inf['key_words_author']
                 keyword = self.get_keywords_lite(keyword)
 
-            f_write.write(doc + '\n')
-            doc2index[doc] = index_dict[t]
+            for sentence in sentence_list:
+                f_write.write(sentence + '\n')
+                doc2index[sentence] = index_dict[t]
             self.keywords += keyword
             # count += 1
-            # if count == 500:
+            # if count == 1000:
             #     break
 
         f_write.close()
@@ -246,7 +289,7 @@ class DataProcess:
 
 
 if __name__ == '__main__':
-    label = sys.argv[1]
+    label = 'patent'
     doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
     doc_index_path = '../data/1.keyword_get/cnc_doc_' + label + '2index.json'
     keyword_path = '../data/1.keyword_get/cnc_keywords_base_' + label + '.txt'
