@@ -11,10 +11,9 @@ import json
 
 
 class Search():
-    def __init__(self, index_path, seg_path, min_freq):
+    def __init__(self, index_path, seg_path):
         self.seg_path = seg_path
         self.index_path = index_path
-        self.min_freq = min_freq
         # 构建索引
         self.index2word = dict()
         self.word2index = dict()
@@ -86,12 +85,9 @@ class Search():
 
     def search(self, word):
         if ' ' in word:
-            print(777)
             word_trans = ' '.join([str(self.word2index[word]) for word in word.split()])
-            print(word_trans)
             freq = self.word_dict_m[word_trans]
         else:
-            print(666)
             word_trans = str(self.word2index[word])
             freq = self.word_dict_s[word_trans]
 
@@ -99,14 +95,15 @@ class Search():
 
 
 if __name__ == '__main__':
-    label = 'patent'
+    label = 'literature'
     seg_path = '../data/1.keyword_get/topmine/partitioneddocs_' + label + '.txt'
     index_path = '../data/1.keyword_get/topmine/vocab_' + label + '.txt'
-    keyword_base_path = '../data/1.keyword_get/cnc_keywords_base_' + label + '.txt'
-    save_path_s = '../data/1.keyword_get/cnc_keywords_single_' + label + '.txt'
-    save_path_m = '../data/1.keyword_get/cnc_keywords_multiple_' + label + '.txt'
+    keyword_base_path = '../data/1.keyword_get/keywords/cnc_keywords_base_' + label + '.txt'
+    save_path_s = '../data/1.keyword_get/keywords/cnc_keywords_single_' + label + '.txt'
+    save_path_m = '../data/1.keyword_get/keywords/cnc_keywords_multiple_' + label + '.txt'
 
-    min_freq = 500
-    search = Search(index_path, seg_path, min_freq)
+    search = Search(index_path, seg_path)
     search.add_base_keywords(keyword_base_path)
-    search.search('five-axis')
+    search.search('five axis')
+    search.search('error compensation')
+    # search.search('tool path plan')

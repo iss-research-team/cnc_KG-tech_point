@@ -76,9 +76,9 @@ def get_index(combine_list, keyword2index_path, index2keyword_path, index2embed_
     index2keyword = defaultdict(set)
     index2embed = dict()
 
-    with open('../data/1.keyword_get/cnc_keywords_patent.json', 'r', encoding='UTF-8') as file:
+    with open('../data/1.keyword_get/keywords/cnc_keywords_patent.json', 'r', encoding='UTF-8') as file:
         keyword_list_patent = json.load(file)
-    with open('../data/1.keyword_get/cnc_keywords_literature.json', 'r', encoding='UTF-8') as file:
+    with open('../data/1.keyword_get/keywords/cnc_keywords_literature.json', 'r', encoding='UTF-8') as file:
         keyword_list_literature = json.load(file)
 
     keyword_embed_patent_path = "../data/2.layer_get/node_emb_net_patent.npy"

@@ -40,7 +40,7 @@ class WordEmbed():
             self.node_list = json.load(file)
         self.node_dict = dict(zip(self.node_list, [i for i in range(len(self.node_list))]))
         # model
-        if if_load_pretrain == "ture":
+        if if_load_pretrain == "yes":
             self.save_path += '_pretrain'
             self.model_path = '../bert-medium-pretrain'
         else:
@@ -56,26 +56,10 @@ class WordEmbed():
         '''
         print('model loading...', self.model_path)
         # 通过词典导入分词器
-        self.tokenizer = BertTokenizer.from_pretrained('prajjwal1/bert-medium')
+        self.tokenizer = BertTokenizer.from_pretrained('prajjwal1/bert-medium',max_length=512)
         # 通过配置和路径导入模型
         self.bert_model = BertModel.from_pretrained(self.model_path)
         print('model loaded!')
-
-    def doc_process(self, doc):
-        '''
-        对句子进行预处理以及分句
-        :param pattern:
-        :param doc:
-        :return:
-        '''
-        # 过长的句子打断
-        doc = doc.strip()
-        sentence_list = doc.split('. ')
-        for sentence in sentence_list:
-            if len(sentence.split()) > 510:
-                print(sentence)
-        doc = ' '.join(doc.split()[:510])
-        return doc.split('. ')
 
     def get_keyword_temper(self, sentence):
         '''
@@ -133,13 +117,11 @@ class WordEmbed():
         # 载入bert
         self.model_loader()
 
-        for doc in tqdm(doc_file):
-            sentence_list = self.doc_process(doc)
-            for sentence in sentence_list:
-                node_count = self.get_keyword_temper(sentence)
-                if node_count:
-                    # 在抓取到关键词之后进行下一步操作。
-                    self.my_bert(sentence, node_count)
+        for sentence in tqdm(doc_file):
+            node_count = self.get_keyword_temper(sentence)
+            if node_count:
+                # 在抓取到关键词之后进行下一步操作。
+                self.my_bert(sentence, node_count)
 
     def emb_save(self):
         '''
@@ -155,8 +137,8 @@ class WordEmbed():
 if __name__ == '__main__':
     label = sys.argv[1]
     if_load_pretrain = sys.argv[2]
-    keywords_path = '../data/1.keyword_get/cnc_keywords_' + label + '.json'
-    doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
+    keywords_path = '../data/1.keyword_get/keywords/cnc_keywords_' + label + '.json'
+    doc_path = '../data/1.keyword_get/doc/cnc_doc_' + label + '.txt'
     result_save_path = '../data/2.layer_get/node_emb_word_' + label
     word_embed = WordEmbed(if_load_pretrain, keywords_path, doc_path, result_save_path)
     word_embed.get_bert_feature()

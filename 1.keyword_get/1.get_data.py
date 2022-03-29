@@ -54,7 +54,7 @@ class DataProcess:
         # 词形还原的工具
         self.lemma_tool = spacy.load("en_core_web_sm")  # load package "en_core_web_sm"
         # 载入停词表
-        self.get_stopwords()
+        # self.get_stopwords()
         # 用于获取专利尾部的关键词和论文的关键词
         self.keywords = []
 
@@ -67,15 +67,15 @@ class DataProcess:
         bit = doc.rfind('.', 0, doc.rfind('.'))
         return doc[:bit + 1].strip(), doc[bit + 1:-1].strip()
 
-    def get_stopwords(self):
-        """
-        Returns a list of stopwords.
-        """
-        f = open("stopwords.txt")
-        stopwords = set()
-        for line in f:
-            stopwords.add(line.rstrip())
-        self.stopwords = stopwords
+    # def get_stopwords(self):
+    #     """
+    #     Returns a list of stopwords.
+    #     """
+    #     f = open("stopwords.txt")
+    #     stopwords = set()
+    #     for line in f:
+    #         stopwords.add(line.rstrip())
+    #     self.stopwords = stopwords
 
     def number_trans(self, string):
         """
@@ -97,7 +97,7 @@ class DataProcess:
         string = ' '.join([token.lemma_ for token in string])
         # 恢复连字符
         string = string.replace(' - ', '-')
-        string = ' '.join([word for word in string.split() if word.lower() not in self.stopwords])
+        # string = ' '.join([word for word in string.split() if word.lower() not in self.stopwords])
         # 停词防止误伤后，去除连字符
         string = string.replace('-', ' ')
         string = self.number_trans(string)
@@ -253,7 +253,7 @@ class DataProcess:
                 sentence_list, keyword = self.doc_trans_patent(doc)
             # 论文处理
             if self.label == 'literature':
-                doc = t + ' ' + inf['doc']
+                doc = inf['doc']
                 sentence_list = self.doc_trans_lite(doc)
                 keyword = inf['key_words_author']
                 keyword = self.get_keywords_lite(keyword)
@@ -290,9 +290,9 @@ class DataProcess:
 
 if __name__ == '__main__':
     label = 'patent'
-    doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
-    doc_index_path = '../data/1.keyword_get/cnc_doc_' + label + '2index.json'
-    keyword_path = '../data/1.keyword_get/cnc_keywords_base_' + label + '.txt'
+    doc_path = '../data/1.keyword_get/doc/cnc_doc_' + label + '.txt'
+    doc_index_path = '../data/1.keyword_get/keywords/cnc_doc_' + label + '2index.json'
+    keyword_path = '../data/1.keyword_get/doc/cnc_keywords_base_' + label + '.txt'
 
     data_process = DataProcess(label, doc_path, doc_index_path, keyword_path)
     data_process.get_date()

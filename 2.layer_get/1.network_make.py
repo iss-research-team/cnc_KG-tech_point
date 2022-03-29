@@ -20,19 +20,6 @@ from collections import defaultdict
 from tqdm import tqdm
 
 
-def doc_process(doc):
-    """
-    对句子进行预处理以及分句
-    :param doc:
-    :return:
-    """
-    re.sub('[^A-Za-z0-9-.]+', ' ', doc)
-    doc = ' '.join(doc.split())
-    # # 去除无关的包含有句号的字符。
-    sentence_list = doc.split('. ')
-    return sentence_list
-
-
 def dis_flag(dis, dis_ave):
     flag = 0
     if 0 < dis < dis_ave:
@@ -134,7 +121,7 @@ class NetworkMaker:
     def get_keyword_seq_simple(self, s):
         """
         if_trans == no
-        :param s:荣耀战魂
+        :param s:
         :return:
         """
         node_list = []
@@ -169,10 +156,8 @@ class NetworkMaker:
         doc_file = open(self.doc_path, 'r', encoding='UTF-8')
 
         if self.if_trans == 'yes':
-            for doc in tqdm(doc_file):
-                sentence_list = doc.split('. ')
-                for sentence in sentence_list:
-                    self.get_keyword_seq(sentence)
+            for sentence in tqdm(doc_file):
+                self.get_keyword_seq(sentence)
             # 连接构建
             for i in tqdm(range(0, self.node_num - 1)):
                 for j in range(i + 1, self.node_num):
@@ -180,18 +165,16 @@ class NetworkMaker:
                     if weight:
                         self.link_list_counter[str(i) + ' | ' + str(j)] += weight
         else:
-            for doc in tqdm(doc_file):
-                sentence_list = doc.split('. ')
-                for sentence in sentence_list:
-                    keyword_list = self.get_keyword_seq_simple(sentence)
-                    if len(keyword_list) < 2:
-                        continue
-                    num_keyword = len(keyword_list)
-                    for i in range(0, num_keyword - 1):
-                        for j in range(i + 1, num_keyword):
-                            if keyword_list[i] == keyword_list[j]:
-                                continue
-                            self.link_list_counter[str(keyword_list[i]) + ' | ' + str(keyword_list[j])] += 1
+            for sentence in tqdm(doc_file):
+                keyword_list = self.get_keyword_seq_simple(sentence)
+                if len(keyword_list) < 2:
+                    continue
+                num_keyword = len(keyword_list)
+                for i in range(0, num_keyword - 1):
+                    for j in range(i + 1, num_keyword):
+                        if keyword_list[i] == keyword_list[j]:
+                            continue
+                        self.link_list_counter[str(keyword_list[i]) + ' | ' + str(keyword_list[j])] += 1
 
         # 字典转list
         self.link_trans()

@@ -31,7 +31,7 @@ class TopmineAdd():
         f = open(self.index_path)
         words = []
         for line in f:
-            words.append(line.rstrip())
+            words.append(line.strip())
         self.index2word = dict(zip([i for i in range(len(words))], words))
         self.word2index = dict(zip(words, [i for i in range(len(words))]))
 
@@ -77,9 +77,13 @@ class TopmineAdd():
         :return:
         '''
         docs = open(self.seg_path, 'r', encoding='UTF-8')
+
         for doc in tqdm(docs):
+            doc = doc.strip()
             words = doc.split(', ')
             for word in words:
+                if not word:
+                    continue
                 if ' ' in word:
                     self.word_dict_m[word] += 1
                 else:
@@ -112,14 +116,14 @@ class TopmineAdd():
 
 
 if __name__ == '__main__':
-    label = 'literature'
+    label = 'patent'
     seg_path = '../data/1.keyword_get/topmine/partitioneddocs_' + label + '.txt'
     index_path = '../data/1.keyword_get/topmine/vocab_' + label + '.txt'
-    keyword_base_path = '../data/1.keyword_get/cnc_keywords_base_' + label + '.txt'
-    save_path_s = '../data/1.keyword_get/cnc_keywords_single_' + label + '.txt'
-    save_path_m = '../data/1.keyword_get/cnc_keywords_multiple_' + label + '.txt'
+    keyword_base_path = '../data/1.keyword_get/keywords/cnc_keywords_base_' + label + '.txt'
+    save_path_s = '../data/1.keyword_get/keywords/cnc_keywords_single_' + label + '.txt'
+    save_path_m = '../data/1.keyword_get/keywords/cnc_keywords_multiple_' + label + '.txt'
 
-    min_freq = 500
+    min_freq = 400
     topmine_add = TopmineAdd(index_path, seg_path, min_freq)
     topmine_add.add_base_keywords(keyword_base_path)
     topmine_add.get_keywords(save_path_s, save_path_m)
