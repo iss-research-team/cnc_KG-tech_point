@@ -134,10 +134,10 @@ class WordEmbed():
 
 
 if __name__ == '__main__':
-    # label = sys.argv[1]
-    # if_load_pretrain = sys.argv[2]
-    label = 'patent'
-    if_load_pretrain = 'no'
+    label = sys.argv[1]
+    if_load_pretrain = sys.argv[2]
+    # label = 'patent'
+    # if_load_pretrain = 'no'
 
     keywords_path = '../data/1.keyword_get/keywords/cnc_keywords_' + label + '.json'
     doc_path = '../data/1.keyword_get/doc/cnc_doc_' + label + '.txt'
