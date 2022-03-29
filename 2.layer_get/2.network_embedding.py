@@ -192,7 +192,7 @@ if __name__ == '__main__':
     loader = Data.DataLoader(MyDataSet(s_list, t_list, ng_list), batch_size, True)
 
     # cuda
-    device = torch.device("cuda:" + str(cuda_order) if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:" + cuda_order if torch.cuda.is_available() else "cpu")
     print('device:', device)
 
     # 模型初始化
@@ -220,6 +220,8 @@ if __name__ == '__main__':
             bar.update(1)
             if epoch > 0 and epoch % 10 == 0:
                 line.save_embedding(os.path.join(node_emb_path, "epoch_" + str(epoch)))
-
-    loss_save_path = '../fig/2.layer_get/embed_loss_' + label + "_" + if_trans + '.png'
+    if if_trans == 'yes':
+        loss_save_path = '../fig/2.layer_get/embed_loss_' + label + "_trans.png"
+    else:
+        loss_save_path = '../fig/2.layer_get/embed_loss_' + label + "_origin.png"
     loss_draw(epochs, ave_loss, loss_save_path)
