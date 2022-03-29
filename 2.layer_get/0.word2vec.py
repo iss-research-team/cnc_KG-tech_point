@@ -45,7 +45,7 @@ class WordEmbed():
             self.model_path = '../bert-medium-pretrain'
         else:
             self.save_path += '_origin'
-            self.model_name = 'prajjwal1/bert-medium'
+            self.model_path = 'prajjwal1/bert-medium'
         # result
         self.node_embed = np.zeros((len(self.node_list), 512))
 
@@ -56,7 +56,7 @@ class WordEmbed():
         '''
         print('model loading...', self.model_path)
         # 通过词典导入分词器
-        self.tokenizer = BertTokenizer.from_pretrained('prajjwal1/bert-medium',max_length=512)
+        self.tokenizer = BertTokenizer.from_pretrained('prajjwal1/bert-medium')
         # 通过配置和路径导入模型
         self.bert_model = BertModel.from_pretrained(self.model_path)
         print('model loaded!')
@@ -91,17 +91,16 @@ class WordEmbed():
         :param keyword_count:
         :return:
         '''
-        sen_code = self.tokenizer.encode_plus(text)
+        sen_code = self.tokenizer(text, truncation=True, max_length=512)
         tokens_tensor = torch.tensor([sen_code['input_ids']])
         segments_tensors = torch.tensor([sen_code['token_type_ids']])
 
         with torch.no_grad():
             encoded_layers = self.bert_model(tokens_tensor, segments_tensors)[0][0].numpy()
-        # print(encoded_layers.shape)
 
         for keyword in keyword_count:
             keyword_emb = np.zeros(512)
-            k_tokens_tensor = self.tokenizer.encode_plus(keyword)['input_ids'][1:-1]
+            k_tokens_tensor = self.tokenizer.encode(keyword, truncation=True, max_length=512)[1:-1]
             index_list = self.get_index(tokens_tensor[0].tolist(), k_tokens_tensor)
             # print('check', [self.vocab_dict[tokens_tensor[0].tolist()[i]] for i in index_list])
             for index in index_list:
@@ -135,8 +134,11 @@ class WordEmbed():
 
 
 if __name__ == '__main__':
-    label = sys.argv[1]
-    if_load_pretrain = sys.argv[2]
+    # label = sys.argv[1]
+    # if_load_pretrain = sys.argv[2]
+    label = 'patent'
+    if_load_pretrain = 'no'
+
     keywords_path = '../data/1.keyword_get/keywords/cnc_keywords_' + label + '.json'
     doc_path = '../data/1.keyword_get/doc/cnc_doc_' + label + '.txt'
     result_save_path = '../data/2.layer_get/node_emb_word_' + label
