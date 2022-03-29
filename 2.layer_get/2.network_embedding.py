@@ -164,16 +164,24 @@ if __name__ == '__main__':
     d = 512
     batch_size = 64
     epochs = 1000
-
-    label = 'patent'
-    if_trans = 'origin'
-    node_path = "../data/1.keyword_get/cnc_keywords_" + label + ".json"
-    link_path = "../data/2.layer_get/link/cnc_keywords_link_" + label + "_" + if_trans + ".json"
+    cuda_order = sys.argv[3]
+    # 数据载入
+    label = sys.argv[1]
+    if_trans = sys.argv[2]
+    print('processing---', label, if_trans)
+    node_path = "../data/1.keyword_get/keywords/cnc_keywords_" + label + ".json"
+    if if_trans == 'yes':
+        link_path = "../data/2.layer_get/link/cnc_keywords_link_" + label + "_trans.json"
+    else:
+        link_path = "../data/2.layer_get/link/cnc_keywords_link_" + label + "_origin.json"
 
     ng_num = 5
 
     node_feature_path = "../data/2.layer_get/node_emb/node_emb_word_" + label + "_pretrain.npy"
-    node_emb_path = "../data/2.layer_get/node_emb/node_emb_net_" + label + "_" + if_trans
+    if if_trans == 'yes':
+        node_emb_path = "../data/2.layer_get/node_emb/node_emb_net_" + label + "_trans"
+    else:
+        node_emb_path = "../data/2.layer_get/node_emb/node_emb_net_" + label + "_origin"
     if not os.path.exists(node_emb_path):
         os.mkdir(node_emb_path)
 
@@ -183,29 +191,35 @@ if __name__ == '__main__':
     node_size, s_list, t_list, ng_list = networkdeal.get_data()
     loader = Data.DataLoader(MyDataSet(s_list, t_list, ng_list), batch_size, True)
 
+    # cuda
+    device = torch.device("cuda:" + str(cuda_order) if torch.cuda.is_available() else "cpu")
+    print('device:', device)
+
     # 模型初始化
     line = Line(node_size, d, node_feature_path)
-    line.cuda()
+    line.to(device)
     optimizer = optim.Adam(line.parameters(), lr=0.0001)
 
     # 保存平均的loss
     ave_loss = []
 
-    for epoch in tqdm(range(epochs)):
-        loss_collector = []
-        for i, (s, t, ng) in enumerate(loader):
-            s = s.cuda()
-            t = t.cuda()
-            ng = ng.cuda()
-            loss = line(s, t, ng)
-            loss.backward()
-            optimizer.step()
+    with tqdm(total=epochs) as bar:
+        for epoch in range(epochs):
+            loss_collector = []
+            for i, (s, t, ng) in enumerate(loader):
+                s = s.to(device)
+                t = t.to(device)
+                ng = ng.to(device)
+                loss = line(s, t, ng)
+                loss.backward()
+                optimizer.step()
+                loss_collector.append(loss.item())
+            ave_loss.append(np.mean(loss_collector))
+            bar.set_description('Epoch ' + str(epoch))
+            bar.set_postfix(loss=np.mean(loss_collector))
+            bar.update(1)
+            if epoch > 0 and epoch % 10 == 0:
+                line.save_embedding(os.path.join(node_emb_path, "epoch_" + str(epoch)))
 
-            if i % 1000 == 0:
-                print("epoch", epoch, "loss", loss.item())
-            loss_collector.append(loss.item())
-        ave_loss.append(np.mean(loss_collector))
-        if epoch > 0 and epoch % 10 == 0:
-            line.save_embedding(os.path.join(node_emb_path, "epoch_" + str(epoch)))
     loss_save_path = '../fig/2.layer_get/embed_loss_' + label + "_" + if_trans + '.png'
     loss_draw(epochs, ave_loss, loss_save_path)

@@ -22,6 +22,7 @@ from tqdm import tqdm
 
 def dis_flag(dis, dis_ave):
     flag = 0
+    # print(dis)
     if 0 < dis < dis_ave:
         flag = 1
     return flag
@@ -71,6 +72,15 @@ class NetworkMaker:
         # 获取邻居
         node_num = len(node_list)
         s_l = s.count(' ') - 1
+
+        # 关键参数1
+        if node_num:
+            dis_threshold = s_l / node_num
+            # print('k', dis_threshold)
+            # dis_threshold = 100000
+        else:
+            dis_threshold = 0
+
         for i in range(node_num):
             for j in range(node_num):
                 if i == j:
@@ -92,8 +102,7 @@ class NetworkMaker:
                 # 1.通过窗口，设置一个窗口大小，窗口之外的词语不予以考虑
                 # 2.进行更小范围的语言切片
                 # 方案2先不予以考虑.
-                dis_threshold = 10  # 关键参数1
-                # dis_threshold = 100000
+
                 if node_start_list[i] < node_start_list[j]:
                     dis = node_start_list[j] - node_start_list[i] - node_length_list[i]
                     if dis_flag(dis, dis_threshold):
@@ -137,9 +146,10 @@ class NetworkMaker:
         add norm
         """
         if self.label == "patent":
-            weight_set = 500
+            weight_set = 600
         else:
-            weight_set = 80
+            weight_set = 150
+        print("weight:", weight_set)
         for link, weight in self.link_list_counter.items():
             s, t = [int(node) for node in link.split(' | ')]
             if weight >= weight_set:  # 关键参数2
@@ -156,8 +166,9 @@ class NetworkMaker:
         doc_file = open(self.doc_path, 'r', encoding='UTF-8')
 
         if self.if_trans == 'yes':
+            print('trans---')
             for sentence in tqdm(doc_file):
-                self.get_keyword_seq(sentence)
+                self.get_keyword_seq(' ' + sentence.replace('.', '').strip() + ' ')
             # 连接构建
             for i in tqdm(range(0, self.node_num - 1)):
                 for j in range(i + 1, self.node_num):
@@ -165,8 +176,9 @@ class NetworkMaker:
                     if weight:
                         self.link_list_counter[str(i) + ' | ' + str(j)] += weight
         else:
+            print('origin---')
             for sentence in tqdm(doc_file):
-                keyword_list = self.get_keyword_seq_simple(sentence)
+                keyword_list = self.get_keyword_seq_simple(' ' + sentence.replace('.', '').strip() + ' ')
                 if len(keyword_list) < 2:
                     continue
                 num_keyword = len(keyword_list)
@@ -178,7 +190,7 @@ class NetworkMaker:
 
         # 字典转list
         self.link_trans()
-        print(len(self.link_list_weighted))
+        print('num of link:', len(self.link_list_weighted))
         with open(self.save_path, 'w', encoding='UTF-8') as file:
             json.dump(self.link_list_weighted, file)
 
@@ -186,12 +198,12 @@ class NetworkMaker:
 if __name__ == '__main__':
     label = sys.argv[1]
     if_trans = sys.argv[2]
-    keyword_path = '../data/1.keyword_get/cnc_keywords_' + label + '.json'
-    doc_path = '../data/1.keyword_get/cnc_doc_' + label + '.txt'
+    keyword_path = '../data/1.keyword_get/keywords/cnc_keywords_' + label + '.json'
+    doc_path = '../data/1.keyword_get/doc/cnc_doc_' + label + '.txt'
     if if_trans == 'yes':
-        link_save_path = '../data/2.layer_get/cnc_keywords_link_' + label + '_trans.json'
+        link_save_path = '../data/2.layer_get/link/cnc_keywords_link_' + label + '_trans.json'
     else:
-        link_save_path = '../data/2.layer_get/cnc_keywords_link_' + label + '_origin.json'
+        link_save_path = '../data/2.layer_get/link/cnc_keywords_link_' + label + '_origin.json'
 
     network_maker = NetworkMaker(label, if_trans, keyword_path, doc_path, link_save_path)
     network_maker.network_make()
